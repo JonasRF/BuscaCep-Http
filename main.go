@@ -21,7 +21,7 @@ type ViaCEP struct {
 }
 
 func main() {
-	http.HandleFunc("/", BuscaCEP)
+	http.HandleFunc("/", BuscaCepHandler)
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -35,9 +35,22 @@ func BuscaCepHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	cep, error := BuscaCEP(cepParam)
+	if error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Hello, World!"))
+	//result , error := json.Marshal(cep)
+	//if error != nil {
+	//	w.WriteHeader(http.StatusInternalServerError)
+	//	return
+	//}
+	//w.Write(result)
+
+	json.NewEncoder(w).Encode(cep)
 }
 
 func BuscaCEP(cep string) (*ViaCEP, error) {
